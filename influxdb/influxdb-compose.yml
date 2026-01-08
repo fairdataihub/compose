@@ -1,0 +1,45 @@
+services:
+  influxdb:
+    # Official InfluxDB Docker image (InfluxDB 3 Core - Latest OSS)
+    image: influxdb:3-core
+    
+    # Explicit container name for easier reference and service discovery
+    container_name: influxdb
+    
+    # Automatically restart the container if it stops (unless manually stopped)
+    restart: unless-stopped
+
+    command:
+      - influxdb3
+      - serve
+      - --node-id=node0
+      - --object-store=file
+      - --data-dir=/var/lib/influxdb3/data
+      - --plugin-dir=/var/lib/influxdb3/plugins
+
+    volumes:
+      # Persist InfluxDB data in a named volume
+      # This ensures data is retained across container restarts and updates
+      - influxdb_data:/var/lib/influxdb3/data
+      - influxdb_plugins:/var/lib/influxdb3/plugins
+
+    # Health check to monitor service availability
+    # Uses wget to verify InfluxDB HTTP API is responding
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8181/health"]
+      interval: 10s          # Check every 10 seconds
+      timeout: 5s           # Wait up to 5 seconds for response
+      retries: 5            # Mark as unhealthy after 5 consecutive failures
+      start_period: 30s     # Allow 30 seconds for initial startup before checking
+
+    # Expose InfluxDB port to the host machine
+    # Default InfluxDB 3 Core port: 8181
+    # Change the port to match your requirements
+    ports:
+      - "xxx:8181"
+
+# Named volumes for persistent storage
+# Stores all InfluxDB data including databases, configuration, and plugins
+volumes:
+  influxdb_data:
+  influxdb_plugins:

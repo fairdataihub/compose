@@ -12,6 +12,7 @@ This collection includes the following services:
 - **[Redis](redis/)** - In-memory data structure store, used as a database, cache, and message broker
 - **[Valkey](valkey/)** - Open-source fork of Redis with Redis protocol compatibility
 - **[Dragonfly](dragonfly/)** - Modern in-memory datastore with Redis and Memcached API compatibility
+- **[InfluxDB](influxdb/)** - Time series database built for real-time analytic workloads
 
 ### Search & AI
 
@@ -45,7 +46,7 @@ All services require:
 Some services may have additional requirements:
 
 - **Ollama**: Optional NVIDIA GPU support for better performance
-- **PostgreSQL/Redis/Valkey/Dragonfly**: Port configuration before starting
+- **PostgreSQL/Redis/Valkey/Dragonfly/InfluxDB**: Port configuration before starting
 - **Dragonfly**: Minimum 4GB RAM recommended for optimal performance
 - **Traefik**: Docker socket access for automatic service discovery
 
@@ -96,6 +97,7 @@ For detailed setup instructions, configuration options, and usage examples, refe
 - [Redis Setup](redis/readme.md)
 - [Valkey Setup](valkey/readme.md)
 - [Dragonfly Setup](dragonfly/readme.md)
+- [InfluxDB Setup](influxdb/readme.md)
 - [Meilisearch Setup](meilisearch/readme.md)
 - [Ollama Setup](ollama/readme.md)
 - [Traefik Setup](traefik/readme.md)
