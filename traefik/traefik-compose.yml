@@ -1,0 +1,54 @@
+services:
+  traefik:
+    # Official Traefik Docker image
+    image: traefik:v3.0
+    
+    # Explicit container name for easier reference and service discovery
+    container_name: traefik
+    
+    # Automatically restart the container if it stops (unless manually stopped)
+    restart: unless-stopped
+
+    # Traefik configuration
+    command:
+      # Enable Docker provider to automatically discover services
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      # Enable API and dashboard
+      - "--api.dashboard=true"
+      - "--api.insecure=true"
+      # Enable access logs
+      - "--accesslog=true"
+      # Entry points for HTTP and HTTPS
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+
+    # Required to access Docker socket for service discovery
+    volumes:
+      # Docker socket for service discovery
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # Optional: Mount Traefik configuration file
+      # - ./traefik.yml:/etc/traefik/traefik.yml:ro
+      # Optional: Mount dynamic configuration
+      # - ./dynamic:/etc/traefik/dynamic:ro
+
+    # Health check to monitor service availability
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/ping"]
+      interval: 10s          # Check every 10 seconds
+      timeout: 5s           # Wait up to 5 seconds for response
+      retries: 5            # Mark as unhealthy after 5 consecutive failures
+      start_period: 10s     # Allow 10 seconds for initial startup before checking
+
+    # Expose Traefik ports to the host machine
+    # Port 80: HTTP entry point
+    # Port 443: HTTPS entry point (if using SSL)
+    # Port 8080: Dashboard and API
+    ports:
+      - "xxx:80"      # HTTP entry point - replace xxx with your desired port
+      - "xxx:443"     # HTTPS entry point - replace xxx with your desired port (optional)
+      - "xxx:8080"    # Dashboard - replace xxx with your desired port
+
+    # Optional: Connect to external networks for service discovery
+    # networks:
+    #   - traefik-network

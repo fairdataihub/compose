@@ -18,6 +18,11 @@ This collection includes the following services:
 - **[Meilisearch](meilisearch/)** - Fast, open-source search engine
 - **[Ollama](ollama/)** - Local AI model runner and API server
 
+### Web Servers & Reverse Proxies
+
+- **[Traefik](traefik/)** - Modern reverse proxy and load balancer with automatic service discovery
+- **[Nginx](nginx/)** - High-performance web server and reverse proxy
+
 ## Quick Start
 
 Each service directory contains its own Docker Compose file and detailed README with setup instructions. To get started with a specific service:
@@ -42,6 +47,7 @@ Some services may have additional requirements:
 - **Ollama**: Optional NVIDIA GPU support for better performance
 - **PostgreSQL/Redis/Valkey/Dragonfly**: Port configuration before starting
 - **Dragonfly**: Minimum 4GB RAM recommended for optimal performance
+- **Traefik**: Docker socket access for automatic service discovery
 
 ## Service Details
 
@@ -92,6 +98,8 @@ For detailed setup instructions, configuration options, and usage examples, refe
 - [Dragonfly Setup](dragonfly/readme.md)
 - [Meilisearch Setup](meilisearch/readme.md)
 - [Ollama Setup](ollama/readme.md)
+- [Traefik Setup](traefik/readme.md)
+- [Nginx Setup](nginx/readme.md)
 
 ## Notes
 
