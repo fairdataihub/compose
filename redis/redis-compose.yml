@@ -1,0 +1,39 @@
+services:
+  redis:
+    # Official Redis Docker image
+    image: redis:7-alpine
+    
+    # Explicit container name for easier reference and service discovery
+    container_name: redis
+    
+    # Automatically restart the container if it stops (unless manually stopped)
+    restart: unless-stopped
+
+    # Redis configuration
+    # Optional: Uncomment to require password authentication
+    # command: redis-server --requirepass xxx
+    
+    volumes:
+      # Persist Redis data in a named volume
+      # This ensures data is retained across container restarts and updates
+      - redis_data:/data
+
+    # Health check to monitor service availability
+    # Uses redis-cli ping to verify Redis is accepting connections
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s          # Check every 10 seconds
+      timeout: 5s           # Wait up to 5 seconds for response
+      retries: 5            # Mark as unhealthy after 5 consecutive failures
+      start_period: 10s     # Allow 10 seconds for initial startup before checking
+
+    # Expose Redis port to the host machine
+    # Default Redis port: 6379
+    # Change the port to match your requirements
+    ports:
+      - "xxx:6379"
+
+# Named volume for persistent storage
+# Stores all Redis data including keys and configuration
+volumes:
+  redis_data:

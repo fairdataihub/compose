@@ -1,0 +1,39 @@
+services:
+  valkey:
+    # Official Valkey Docker image
+    image: valkey/valkey:7.2-alpine
+    
+    # Explicit container name for easier reference and service discovery
+    container_name: valkey
+    
+    # Automatically restart the container if it stops (unless manually stopped)
+    restart: unless-stopped
+
+    # Valkey configuration
+    # Optional: Uncomment to require password authentication
+    # command: valkey-server --requirepass xxx
+    
+    volumes:
+      # Persist Valkey data in a named volume
+      # This ensures data is retained across container restarts and updates
+      - valkey_data:/data
+
+    # Health check to monitor service availability
+    # Uses valkey-cli ping to verify Valkey is accepting connections
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 10s          # Check every 10 seconds
+      timeout: 5s           # Wait up to 5 seconds for response
+      retries: 5            # Mark as unhealthy after 5 consecutive failures
+      start_period: 10s     # Allow 10 seconds for initial startup before checking
+
+    # Expose Valkey port to the host machine
+    # Default Valkey port: 6379 (same as Redis for compatibility)
+    # Change the port to match your requirements
+    ports:
+      - "xxx:6379"
+
+# Named volume for persistent storage
+# Stores all Valkey data including keys and configuration
+volumes:
+  valkey_data:

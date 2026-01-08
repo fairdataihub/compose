@@ -1,0 +1,44 @@
+services:
+  postgres:
+    # Official PostgreSQL Docker image
+    image: postgres:18
+    
+    # Explicit container name for easier reference and service discovery
+    container_name: postgres
+    
+    # Automatically restart the container if it stops (unless manually stopped)
+    restart: unless-stopped
+
+    environment:
+      # PostgreSQL database configuration
+      # Change these values to match your requirements
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+      # Optional: Set timezone
+      - TZ=UTC
+
+    volumes:
+      # Persist PostgreSQL data in a named volume
+      # This ensures data is retained across container restarts and updates
+      - postgres_data:/var/lib/postgresql
+
+    # Health check to monitor service availability
+    # Uses pg_isready to verify PostgreSQL is accepting connections
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s          # Check every 10 seconds
+      timeout: 5s           # Wait up to 5 seconds for response
+      retries: 5            # Mark as unhealthy after 5 consecutive failures
+      start_period: 10s     # Allow 10 seconds for initial startup before checking
+
+    # Expose PostgreSQL port to the host machine
+    # Default PostgreSQL port: 5432
+    # Change the port to match your requirements
+    ports:
+      - "xxx:5432"
+
+# Named volume for persistent storage
+# Stores all PostgreSQL data including databases and configuration
+volumes:
+  postgres-data:

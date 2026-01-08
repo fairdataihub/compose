@@ -1,0 +1,15 @@
+services:
+  meilisearch:
+    image: getmeili/meilisearch:v1.16
+    restart: always
+    ports:
+      - "xxx:7700"
+    environment:
+      MEILI_ENV: development
+      MEILI_MASTER_KEY: xxx
+      MEILI_HTTP_PAYLOAD_SIZE_LIMIT: xxx # Optional. Not needed for 99% of cases.
+    volumes:
+      - meili_data:/meili_data
+
+volumes:
+  meili_data:

@@ -1,0 +1,64 @@
+services:
+  ollama:
+    # Official Ollama Docker image - pulls the latest version
+    image: ollama/ollama:latest
+    
+    # Explicit container name for easier reference and service discovery
+    container_name: ollama
+    
+    # Automatically restart the container if it stops (unless manually stopped)
+    restart: unless-stopped
+
+    environment:
+      # Bind Ollama to all network interfaces (0.0.0.0) on port 11434
+      # This allows other containers on the Docker network to access the service
+      - OLLAMA_HOST=0.0.0.0:11434
+
+    volumes:
+      # Persist Ollama data (downloaded models, configuration) in a named volume
+      # This ensures models are retained across container restarts and updates
+      - ollama:/root/.ollama
+
+    # Connect to the external Docker network for inter-container communication
+    # Other services can access this container using the hostname "ollama"
+    networks:
+      - ollama-network
+
+    # Enable GPU support for accelerated model inference
+    # Requires NVIDIA Docker runtime (nvidia-container-toolkit)
+    # Remove or comment out this section if you don't have GPU support
+    gpus: all
+
+    # Health check to monitor service availability
+    # Runs "ollama list" command every 30 seconds to verify the service is responding
+    healthcheck:
+      test: ["CMD-SHELL", "ollama list >/dev/null 2>&1 || exit 1"]
+      interval: 30s          # Check every 30 seconds
+      timeout: 10s          # Wait up to 10 seconds for response
+      retries: 5            # Mark as unhealthy after 5 consecutive failures
+      start_period: 30s     # Allow 30 seconds for initial startup before checking
+
+    # OPTIONAL: Expose Ollama to the host machine
+    # Uncomment the lines below if you want to access Ollama from your host
+    # (e.g., using curl, Postman, or a local application)
+    # 
+    # WARNING: This will expose port 11434 on your host. If you already have
+    # Ollama running on your host machine, this will cause a port conflict.
+    # ports:
+    #   - "11434:11434"  # Maps container port 11434 to host port 11434
+
+# Named volume for persistent storage
+# Stores all Ollama data including downloaded models and configuration
+volumes:
+  ollama:
+
+# External network configuration
+# This network must be created before starting this compose file:
+#   docker network create ollama-network
+#
+# Using an external network allows multiple Docker Compose projects to
+# share the same network and communicate with each other
+networks:
+  ollama-network:
+    name: ollama-network
+    external: true  # Network exists outside this compose file
