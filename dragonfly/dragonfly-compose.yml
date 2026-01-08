@@ -1,0 +1,41 @@
+services:
+  dragonfly:
+    # Official Dragonfly Docker image
+    image: docker.dragonflydb.io/dragonflydb/dragonfly
+    
+    # Explicit container name for easier reference and service discovery
+    container_name: dragonfly
+    
+    # Automatically restart the container if it stops (unless manually stopped)
+    restart: unless-stopped
+
+    # Dragonfly configuration
+    # ulimit memlock=-1 is required for optimal performance
+    ulimits:
+      memlock: -1
+    
+    volumes:
+      # Persist Dragonfly data in a named volume
+      # This ensures data is retained across container restarts and updates
+      - dragonfly_data:/data
+
+    # Health check to monitor service availability
+    # Uses redis-cli ping to verify Dragonfly is accepting connections (Redis-compatible)
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s          # Check every 10 seconds
+      timeout: 5s           # Wait up to 5 seconds for response
+      retries: 5            # Mark as unhealthy after 5 consecutive failures
+      start_period: 10s     # Allow 10 seconds for initial startup before checking
+
+    # Expose Dragonfly port to the host machine
+    # Default port: 6379 (Redis-compatible)
+    # Dragonfly also supports HTTP on the same port
+    # Change the port to match your requirements
+    ports:
+      - "xxx:6379"
+
+# Named volume for persistent storage
+# Stores all Dragonfly data including keys and configuration
+volumes:
+  dragonfly_data:

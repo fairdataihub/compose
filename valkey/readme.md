@@ -4,7 +4,7 @@ This directory contains a Docker Compose configuration for running [Valkey](http
 
 ## Overview
 
-Valkey is an open-source fork of Redis that maintains Redis compatibility while providing additional features and improvements. This setup creates a Valkey service that:
+This setup creates a Valkey service that:
 
 - Persists data in a Docker volume
 - Includes health checks to ensure the service is running properly
