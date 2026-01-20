@@ -1,10 +1,22 @@
-# Ollama Docker Compose for Debian (Recommended)
+# Ollama Docker Compose for Ubuntu with Snap Docker (NOT RECOMMENDED)
 #
-# Why this setup:
-# - Hard GPU isolation: only GPU 0 is passed into the container
-# - Future-proof: uses modern `gpus:` syntax instead of legacy `runtime: nvidia`
-# - Safe coexistence: other apps can cleanly pin to GPU 1
-# - No accidental multi-GPU memory grabs
+# WARNING: This configuration is provided for Ubuntu systems using Snap Docker,
+# but we DO NOT recommend using it due to numerous issues with Snap confinement
+# and nvidia-container-toolkit.
+#
+# Known issues with Snap Docker:
+# - CDI (Container Device Interface) method doesn't work due to Snap confinement
+# - The `gpus:` syntax fails with permission/path errors
+# - Requires legacy `runtime: nvidia` workaround
+# - Inconsistent behavior across Ubuntu versions
+# - Updates can break GPU passthrough unexpectedly
+#
+# RECOMMENDATION: If possible, uninstall Snap Docker and install Docker via
+# the official Docker apt repository instead. Then use ollama-compose.yml.
+#
+# To switch from Snap Docker to official Docker:
+#   sudo snap remove docker
+#   # Follow: https://docs.docker.com/engine/install/ubuntu/
 
 services:
   ollama:
@@ -17,12 +29,16 @@ services:
     # Automatically restart the container if it stops (unless manually stopped)
     restart: unless-stopped
 
+    # Use nvidia runtime for GPU support (required for Snap Docker)
+    # This is the legacy method - prefer gpus: syntax on non-Snap installations
+    runtime: nvidia
+
     environment:
       # Bind Ollama to all network interfaces (0.0.0.0) on port 11434
       # This allows other containers on the Docker network to access the service
       - OLLAMA_HOST=0.0.0.0:11434
-      # Pin to GPU 0 only (matches the gpus device setting below)
-      - NVIDIA_VISIBLE_DEVICES=0
+      # Enable all GPUs (required when using runtime: nvidia instead of deploy.resources)
+      - NVIDIA_VISIBLE_DEVICES=all
 
     volumes:
       # Persist Ollama data (downloaded models, configuration) in a named volume
@@ -34,12 +50,9 @@ services:
     networks:
       - ollama-network
 
-    # Modern GPU passthrough syntax - pins to GPU device 0 only
-    # This is the recommended approach for standard Docker installations
-    # To use a different GPU, change "device=0" to "device=1", etc.
-    # To pin by UUID (best for mixed cards): "device=GPU-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-    gpus:
-      - "device=0"
+    # Note: Using 'runtime: nvidia' + 'NVIDIA_VISIBLE_DEVICES=all' instead of 'gpus: all'
+    # This is required for Snap Docker with nvidia-container-toolkit
+    # The 'gpus: all' syntax uses the CDI method which has Snap confinement issues
 
     # Health check to monitor service availability
     # Runs "ollama list" command every 30 seconds to verify the service is responding

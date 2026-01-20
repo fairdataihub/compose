@@ -2,10 +2,10 @@ services:
   nginx:
     # Official Nginx Docker image
     image: nginx:alpine
-    
+
     # Explicit container name for easier reference and service discovery
     container_name: nginx
-    
+
     # Automatically restart the container if it stops (unless manually stopped)
     restart: unless-stopped
 
@@ -22,17 +22,18 @@ services:
 
     # Health check to monitor service availability
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
-      interval: 10s          # Check every 10 seconds
-      timeout: 5s           # Wait up to 5 seconds for response
-      retries: 5            # Mark as unhealthy after 5 consecutive failures
-      start_period: 10s     # Allow 10 seconds for initial startup before checking
+      test:
+        ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 10s # Check every 10 seconds
+      timeout: 5s # Wait up to 5 seconds for response
+      retries: 5 # Mark as unhealthy after 5 consecutive failures
+      start_period: 10s # Allow 10 seconds for initial startup before checking
 
     # Expose Nginx port to the host machine
     # Default HTTP port: 80
     # Change the port to match your requirements
     ports:
-      - "xxx:80"      # HTTP port - replace xxx with your desired port
+      - "xxx:80" # HTTP port - replace xxx with your desired port
       # Optional: HTTPS port
       # - "xxx:443"   # HTTPS port - replace xxx with your desired port
 
