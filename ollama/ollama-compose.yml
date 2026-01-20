@@ -9,10 +9,15 @@ services:
     # Automatically restart the container if it stops (unless manually stopped)
     restart: unless-stopped
 
+    # Use nvidia runtime for GPU support (required for Snap Docker)
+    runtime: nvidia
+
     environment:
       # Bind Ollama to all network interfaces (0.0.0.0) on port 11434
       # This allows other containers on the Docker network to access the service
       - OLLAMA_HOST=0.0.0.0:11434
+      # Enable all GPUs (required when using runtime: nvidia instead of deploy.resources)
+      - NVIDIA_VISIBLE_DEVICES=all
 
     volumes:
       # Persist Ollama data (downloaded models, configuration) in a named volume
@@ -24,10 +29,9 @@ services:
     networks:
       - ollama-network
 
-    # Enable GPU support for accelerated model inference
-    # Requires NVIDIA Docker runtime (nvidia-container-toolkit)
-    # Remove or comment out this section if you don't have GPU support
-    gpus: all
+    # Note: Using 'runtime: nvidia' + 'NVIDIA_VISIBLE_DEVICES=all' instead of 'gpus: all'
+    # This is required for Snap Docker with nvidia-container-toolkit
+    # The 'gpus: all' syntax uses the CDI method which has Snap confinement issues
 
     # Health check to monitor service availability
     # Runs "ollama list" command every 30 seconds to verify the service is responding
