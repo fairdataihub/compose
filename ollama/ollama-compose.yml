@@ -1,10 +1,8 @@
-# Ollama Docker Compose for Debian (Recommended)
+# Ollama Docker Compose (Recommended)
 #
 # Why this setup:
 # - Hard GPU isolation: only GPU 0 is passed into the container
-# - Future-proof: uses modern `gpus:` syntax instead of legacy `runtime: nvidia`
 # - Safe coexistence: other apps can cleanly pin to GPU 1
-# - No accidental multi-GPU memory grabs
 
 services:
   ollama:
@@ -21,8 +19,6 @@ services:
       # Bind Ollama to all network interfaces (0.0.0.0) on port 11434
       # This allows other containers on the Docker network to access the service
       - OLLAMA_HOST=0.0.0.0:11434
-      # Pin to GPU 0 only (matches the gpus device setting below)
-      - NVIDIA_VISIBLE_DEVICES=0
 
     volumes:
       # Persist Ollama data (downloaded models, configuration) in a named volume
@@ -35,11 +31,8 @@ services:
       - ollama-network
 
     # Modern GPU passthrough syntax - pins to GPU device 0 only
-    # This is the recommended approach for standard Docker installations
-    # To use a different GPU, change "device=0" to "device=1", etc.
-    # To pin by UUID (best for mixed cards): "device=GPU-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
     gpus:
-      - "device=0"
+      - device_ids: ["0"]
 
     # Health check to monitor service availability
     # Runs "ollama list" command every 30 seconds to verify the service is responding
